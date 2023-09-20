@@ -23,7 +23,7 @@ class _HomeTabState extends State<HomeTab> {
 
   late String? _textVar;
   // var _textVar;
-  Future _dsplySrvc(value) async {
+  /*Future _dsplySrvc(value) async {
     return _firebaseServices.usersRef
         .doc(_firebaseServices.getUserID())
         .collection("SelectedService")
@@ -33,7 +33,7 @@ class _HomeTabState extends State<HomeTab> {
           print("product ${value} removed");
           // _refreshServiceProduct();
         });
-  }
+  }*/
 
   Future _getSelectedSrvc<String>() async {
     var _myVar = _firebaseServices.servicesRef
@@ -105,6 +105,7 @@ class _HomeTabState extends State<HomeTab> {
               horizontal: 20
             ),
             child: StreamBuilder<QuerySnapshot>(
+              // stream: _firebaseServices.usersRef
               stream: _firebaseServices.servicesRef
                 .orderBy("btnOrder", descending: false)
                   .snapshots(),
@@ -112,7 +113,7 @@ class _HomeTabState extends State<HomeTab> {
                 if( snapshot.hasError) {
                   return Scaffold(
                     body: Center(
-                      child: Text("Error: ${snapshot.error}"),
+                      child: Text("HomeTabDataError: ${snapshot.error}"),
                     ),
                   );
                 }

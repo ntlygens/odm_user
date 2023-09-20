@@ -6,6 +6,7 @@ class FirebaseServices {
   late String _firebaseTimeStamp;
 
   String getUserID() {
+    // print('Crnt Usr: ${_firebaseAuth.currentUser!.uid}');
     return _firebaseAuth.currentUser!.uid;
   }
 
