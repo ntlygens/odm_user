@@ -81,7 +81,9 @@ class _HomeTabState extends State<HomeTab> {
   @override
   void initState() {
     _pageController = PageController();
-    _textVar = "VnhXnkWdbvbZcSm7duYF";
+    _textVar = "AnnNjTT8vmYSAEpT0rPg";
+    /// for use with ondamenu-pos db ///
+    /// _textVar = "VnhXnkWdbvbZcSm7duYF"; ///
     super.initState();
   }
 
@@ -113,7 +115,7 @@ class _HomeTabState extends State<HomeTab> {
                 if( snapshot.hasError) {
                   return Scaffold(
                     body: Center(
-                      child: Text("HomeTabDataError: ${snapshot.error}"),
+                      child: Text("HomeTab-SrvcsRef-DataError: ${snapshot.error}"),
                     ),
                   );
                 }
