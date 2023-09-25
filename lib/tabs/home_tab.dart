@@ -213,7 +213,6 @@ class _HomeTabState extends State<HomeTab> {
                                         print("HomeTab-Srvc-Data-Name: ${_srvcDataList[index]['name']} \n");
                                         print("HomeTab-Srvc-Data-ID: ${_srvcDataList[index].id}");
                                         print("HomeTab-Srvc-Data-Type: ${_srvcDataList[index]['srvcType']}");
-
                                         Navigator.push(context, MaterialPageRoute(
                                             builder: (context) =>
                                                 SelectedServicePage(
@@ -237,6 +236,9 @@ class _HomeTabState extends State<HomeTab> {
                                               alignment: Alignment.center,
                                               child: ClipRRect(
                                                 borderRadius: BorderRadius.circular(6),
+                                                /*child: Text(
+                                                  "${_srvcDataList[index]['name']}"
+                                                ),*/
                                                 child: Image.network(
                                                   "${_srvcDataList[index]['images'][0]}",
                                                   fit: BoxFit.fill,

@@ -256,6 +256,8 @@ class _CategoryTypesState extends State<CategoryTypes> {
 
                 if(sellerSnap.connectionState == ConnectionState.active) {
                   if(sellerSnap.hasData) {
+                    print("list item = ${widget.categoryTypeList[index]}");
+
                     // print("ID: ${sellerSnap.data.id} \n Name: ${sellerSnap.data['name']}");
                     return GestureDetector(
                       onTap: () async {
