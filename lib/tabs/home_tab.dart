@@ -21,7 +21,11 @@ class _HomeTabState extends State<HomeTab> {
   late PageController _pageController;
   int _selectedPage = 0;
 
-  late String? _textVar;
+  late String? _textVar = "";
+  late String? _textVar2 = "";
+  var key = GlobalKey();
+  Size? redboxSize;
+
   // var _textVar;
   /*Future _dsplySrvc(value) async {
     return _firebaseServices.usersRef
@@ -35,8 +39,32 @@ class _HomeTabState extends State<HomeTab> {
         });
   }*/
 
+  Future _getOtherDB<String>() async {
+    var _othrDB = _firebaseServices.servicesRefPOS
+        .get()
+        .then((value) => value.docs
+          .forEach((element) {
+            // var docRef = _firebaseServices.servicesRef
+            //   .doc(element.id).snapshots();
+            var docRef = element['isSelected'];
+
+            if (docRef == true) {
+              _textVar2 = element.id;
+              print("${_textVar2} is Selected");
+            } else {
+              print("Not textVar2 exists");
+            }
+          })
+        );
+    print("thi is 2: ${_othrDB}");
+    return _textVar2;
+    // docRef.collection('sid');
+    // docRef.update({'isSelected': true});
+  }
+
   Future _getSelectedSrvc<String>() async {
     var _myVar = _firebaseServices.servicesRef
+    // var _myVar = _firebaseServices.servicesRefPOS
         .get()
         .then((value) => value.docs
         .forEach((element) {
@@ -46,8 +74,10 @@ class _HomeTabState extends State<HomeTab> {
 
             if (docRef == true) {
               _textVar = element.id;
-              print("${_textVar} is Selected");
-            }
+              print("Srvc: [${element['name']}] with Id: [${_textVar}] is Selected");
+            } /*else {
+              print("Not textVar exists");
+            }*/
 
             // docRef.collection('sid');
             // docRef.update({'isSelected': true});
@@ -60,16 +90,18 @@ class _HomeTabState extends State<HomeTab> {
         // .toString()
     ;
 
-    print("thi is: ${_myVar}");
+    // print("thi is: ${_textVar}");
     return _textVar;
   }
 
   Future _dsplySelectedSrvc(value) async {
     return _firebaseServices.servicesRef
+    // return _firebaseServices.servicesRefPOS
         .get()
         .then((value) => value.docs
           .forEach((element) {
             var docRef = _firebaseServices.servicesRef
+            // var docRef = _firebaseServices.servicesRefPOS
                 .doc(element.id);
 
                 docRef.update({'isSelected': true});
@@ -81,9 +113,15 @@ class _HomeTabState extends State<HomeTab> {
   @override
   void initState() {
     _pageController = PageController();
-    _textVar = "AnnNjTT8vmYSAEpT0rPg";
+    _getSelectedSrvc();
+    // _textVar = "AnnNjTT8vmYSAEpT0rPg";
     /// for use with ondamenu-pos db ///
     /// _textVar = "VnhXnkWdbvbZcSm7duYF"; ///
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      setState(() {
+        redboxSize = getRedBoxSize(key.currentContext!);
+      });
+    });
     super.initState();
   }
 
@@ -95,205 +133,149 @@ class _HomeTabState extends State<HomeTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Stack(
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+    // double actnBarHeight = MediaQuery.of(context).this<ActionBar>.size.height;
+    // _getSelectedSrvc();
+   //  _getOtherDB();
+    return Scaffold(
+      body: Stack(
         children: [
           Center(
             child: Text("Home Tab"),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: 40,
-              horizontal: 20
+            padding: EdgeInsets.all(
+                0
             ),
             child: StreamBuilder<QuerySnapshot>(
-              // stream: _firebaseServices.usersRef
-              stream: _firebaseServices.servicesRef
-                .orderBy("btnOrder", descending: false)
-                  .snapshots(),
-              builder: (context, AsyncSnapshot snapshot) {
-                if( snapshot.hasError) {
-                  return Scaffold(
-                    body: Center(
-                      child: Text("HomeTab-SrvcsRef-DataError: ${snapshot.error}"),
-                    ),
-                  );
-                }
-
-                if(snapshot.connectionState == ConnectionState.active){
-                  if(snapshot.hasData){
-                    _srvcData = snapshot.data!.docs;
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 675,
-                          height: 640,
-                          padding: EdgeInsets.symmetric (
-                            // 8,
-                              vertical: 6,
-                              horizontal: 8
-                          ),
-                          decoration: BoxDecoration(
-                              color: Color(0xFFEFEFEF),
-                              borderRadius: BorderRadius.circular(8)
-                          ),
-                          child: GridView.builder(
-                           shrinkWrap: true,
-                           physics: ScrollPhysics() ,
-                           gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                               maxCrossAxisExtent: 300,
-                               childAspectRatio: 2 / 1
-                           ),
-                           itemCount: _srvcData.length,
-                           itemBuilder: (BuildContext context, int index) {
-                             return GestureDetector(
-                               onTap: () {
-                                 print("eDOc: ${_srvcData[index]['name']} \n");
-                                 print("eDOc2: ${_srvcData[index].id}");
-
-                                 setState(() {
-                                   _textVar = _srvcData[index].id;
-                                 });
-                               },
-                               child: Card(
-                                 elevation: 4,
-                                 margin: EdgeInsets.symmetric(
-                                   // 8
-                                   vertical: 6,
-                                   horizontal: 12,
-                                 ),
-                                 child: Stack(
-                                   children: [
-                                     Container(
-                                       alignment: Alignment.center,
-                                       child: ClipRRect(
-                                         borderRadius: BorderRadius.circular(6),
-                                         child: Image.network(
-                                           "${_srvcData[index]['images'][0]}",
-                                           fit: BoxFit.cover,
-                                         ),
-                                       ),
-                                     ),
-                                   ],
-                                 ),
-                               ),
-
-                             );
-                           },
-                         )
-                        ),
-                        Container(
-                          width: 700,
-                          height: 640,
-                          padding: EdgeInsets.all(
-                            8,
-                          ),
-                          decoration: BoxDecoration(
-                              color: Color(0xFFEFEFEF),
-                              borderRadius: BorderRadius.circular(8)
-                          ),
-                          alignment: Alignment.center,
-                          margin: EdgeInsets.symmetric(
-                              vertical: 0,
-                              horizontal: 0
-                          ),
-                          child: Container(
-                            child: PageView(
-                              controller: _pageController,
-                              onPageChanged: (num) {
-                                setState(() {
-                                  _selectedPage = num;
-                                });
-                              },
-                              children: [
-                                SelectedServicePage(
-                                  serviceID: "${_textVar}",
-                                ),
-                                /*ProductWndw(
-                                    isSelected: isSelected,
-                                    sellerID: sellerID
-                                )*/
-
-                              ]
-                            ),
-                          ),
-
-                          /*child: Column(
-                            // crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white70,
-                                  border: Border(
-                                    top: BorderSide(color: Colors.green),
-                                    bottom: BorderSide(color: Colors.green),
-                                  ),
-                                ),
-                                alignment: Alignment.center,
-                                margin: EdgeInsets.only(
-                                    top: 100,
-                                    right: 48,
-                                    bottom: 0,
-                                    left: 48
-                                ),
-                                padding: EdgeInsets.symmetric(vertical: 10),
-                                child: Text(
-                                  "${_textVar}",
-                                  style: TextStyle(
-                                    fontSize: 28,
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white70,
-                                  border: Border(
-                                    top: BorderSide(color: Colors.green),
-                                    bottom: BorderSide(color: Colors.green),
-                                  ),
-                                ),
-                                alignment: Alignment.center,
-                                margin: EdgeInsets.symmetric(
-                                    vertical: 15,
-                                    horizontal: 10
-                                ),
-                                padding: EdgeInsets.symmetric(vertical: 10),
-                                child: Text(
-                                  "text here",
-                                  style: TextStyle(
-                                    fontSize: 28,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),*/
-                        )
-                      ],
+                stream: _firebaseServices.servicesRef
+                // stream: _firebaseServices.servicesRefPOS
+                    .orderBy("btnOrder", descending: false)
+                    .snapshots(),
+                builder: (context, AsyncSnapshot snapshot) {
+                  if( snapshot.hasError) {
+                    return Scaffold(
+                      body: Center(
+                        child: Text("HomeTab-SrvcsRef-DataError: ${snapshot.error}"),
+                      ),
                     );
                   }
+
+                  if(snapshot.connectionState == ConnectionState.active){
+                    if(snapshot.hasData){
+                      _srvcData = snapshot.data!.docs;
+                      return Container(
+                        alignment: Alignment.topCenter,
+                        width: screenWidth,
+                        height: screenHeight,
+                        margin: EdgeInsets.fromLTRB(0, 100, 0, 20),
+                        padding: EdgeInsets.symmetric (
+                            vertical: 0,
+                            horizontal: 0
+                          // 8,
+                          // vertical: 16,
+                          // horizontal: 8
+                        ),
+                        decoration: BoxDecoration(
+                          // ]\color: Color(0xB3EFBCBC),
+                          // borderRadius: BorderRadius.circular(8)
+                        ),
+
+                        // mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        // crossAxisAlignment: CrossAxisAlignment.start,
+                        child: SizedBox(
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.vertical,
+                                clipBehavior: Clip.antiAlias,
+                                // physics: ScrollPhysics(),
+                                child: GridView.builder(
+                                  // padding: EdgeInsets.fromLTRB(0, 70, 0, 320),
+                                  shrinkWrap: true,
+                                  physics: ScrollPhysics(),
+                                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                                      maxCrossAxisExtent: 400,
+                                      childAspectRatio: 2 / 1
+                                  ),
+                                  itemCount: _srvcData.length,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _textVar = _srvcData[index].id;
+                                        });
+
+                                        print("HomeTab-Srvc-Data-Name: ${_srvcData[index]['name']} \n");
+                                        print("HomeTab-Srvc-Data-ID: ${_srvcData[index].id}");
+
+                                        Navigator.push(context, MaterialPageRoute(
+                                            builder: (context) =>
+                                                SelectedServicePage(
+                                                  serviceID: "${_textVar}",
+                                                )
+                                          // ServiceProductsPage(),
+                                        ));
+                                      },
+                                      child: Card(
+                                        elevation: 4,
+                                        margin: EdgeInsets.symmetric(
+                                          // 8
+                                          vertical: 11,
+                                          horizontal: 16,
+                                        ),
+                                        clipBehavior: Clip.antiAlias,
+                                        child: Stack(
+                                          children: [
+                                            Container(
+                                              alignment: Alignment.center,
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.circular(6),
+                                                child: Image.network(
+                                                  "${_srvcData[index]['images'][0]}",
+                                                  fit: BoxFit.fill,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                    );
+                                  },
+                                ),
+                              )
+
+                          ),
+                      );
+                    }
+                  }
+
+                  return Scaffold(
+                    body: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+
                 }
-
-                return Scaffold(
-                  body: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-
-              }
             ),
           ),
 
           // FutureBuilder<QuerySnapshot>(
 
           ActionBar(
+            key: key,
             title: "Home Page",
             hasBackArrow: false,
           ),
         ],
       ),
+
     );
+  }
+
+  /// get size of actionBar to drop tab below it ///
+  Size getRedBoxSize(BuildContext context) {
+    final box = context.findRenderObject() as RenderBox;
+    return box.size;
   }
 }

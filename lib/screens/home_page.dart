@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
                 },
                 children: [
                   HomeTab(),
-                  // ProfileTab(),
+                  ProfileTab(),
                   // SearchTab(),
                   // ShoppingCartTab(),
                 ],

@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ondamenu/screens/service_products_page.dart';
 import 'package:ondamenu/services/firebase_services.dart';
@@ -7,12 +7,14 @@ class CategoryTypes extends StatefulWidget {
   final List categoryTypeList;
   final String serviceCategoryName;
   final String serviceCategoryID;
+  final String serviceCategoryType;
   final Function(String)? onSelected;
   CategoryTypes({
     required this.categoryTypeList,
     this.onSelected,
     required this.serviceCategoryName,
     required this.serviceCategoryID,
+    required this.serviceCategoryType,
   });
 
   @override
@@ -25,8 +27,10 @@ class _CategoryTypesState extends State<CategoryTypes> {
   String _selectedProductSrvcID = "selected-product-service-id";
   String _selectedSrvcCtgryName = "selected-service-name";
   String _selectedSrvcCtgryID = "selected-service-id";
+  String _selectedSrvcCtgryType = "selected-service-type";
 
-  late String _isCustomerService;
+  late bool _isCustomerService;
+  late var _slctdSrvc;
 
   FirebaseServices _firebaseServices = FirebaseServices();
 
@@ -99,14 +103,14 @@ class _CategoryTypesState extends State<CategoryTypes> {
 
   // Check if service type for product or customer before requesting data
   Future _checkServiceType() async {
-    if( widget.categoryTypeList[0].data['srvcType'] == null)  {
-      print ('its product servcice');
-    }
+    if( widget.serviceCategoryType == "customer")
+      _isCustomerService = true;
+      print ('its a customer servcice');
   }
 
   @override
   void initState() {
-    _isCustomerService = "VnhXnkWdbvbZcSm7duYF";
+    // _isCustomerService = "AnnNjTT8vmYSAEpT0rPg";
     _checkServiceType();
     super.initState();
   }
@@ -130,8 +134,14 @@ class _CategoryTypesState extends State<CategoryTypes> {
           itemCount: widget.categoryTypeList.length,
           itemBuilder: (BuildContext ctx, index) {
             // if(widget.categoryTypeList.isEmpty){};
+            // print('ctgry lngth: ${widget.categoryTypeList.length}');
+            if(_isCustomerService) {
+              _slctdSrvc = _firebaseServices.customerSrvcsRef;
+            } else {
+              _slctdSrvc = _firebaseServices.productsRef;
+            }
             return StreamBuilder(
-              stream: _firebaseServices.productsRef
+              stream: _slctdSrvc
                   .doc("${widget.categoryTypeList[index]}")
                   .snapshots(),
               builder: (context, AsyncSnapshot productSnap) {

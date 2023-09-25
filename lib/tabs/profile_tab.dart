@@ -13,8 +13,8 @@ class ProfileTab extends StatelessWidget {
           ),
           ActionBar(
             title: "Profile Page",
-            hasTitle: false,
-            hasBackArrow: true,
+            // hasTitle: false,
+            hasBackArrow: false,
           ),
         ],
       ),

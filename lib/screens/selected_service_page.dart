@@ -116,12 +116,15 @@ class _SelectedServicePageState extends State<SelectedServicePage> {
 
                   if (snapshot.connectionState == ConnectionState.done) {
                     List _docs = snapshot.data!['type'];
+                    String _srvc = snapshot.data!['srvcType'];
                     return ListView(
                         padding: EdgeInsets.all(0),
                         children: [
                           Column(
                               children: [
+                                /// Icon Viewer Row ///
                                 ImageSwipe(imageList: snapshot.data!['images']),
+                                /// Slctd Ctgry Name Row ///
                                 Padding(
                                   padding: EdgeInsets.symmetric(
                                       vertical: 10,
@@ -132,6 +135,7 @@ class _SelectedServicePageState extends State<SelectedServicePage> {
                                     style: Constants.boldHeading,
                                   ),
                                 ),
+                                /// Description Row ///
                                 Padding(
                                   padding: EdgeInsets.symmetric(
                                       vertical: 10,
@@ -145,6 +149,7 @@ class _SelectedServicePageState extends State<SelectedServicePage> {
                                     ),
                                   ),
                                 ),
+                                /// Catagories Label Row ///
                                 Padding(
                                   padding: EdgeInsets.only(
                                       left: 20,
@@ -162,6 +167,7 @@ class _SelectedServicePageState extends State<SelectedServicePage> {
 
                                   ),
                                 ),
+                                /// Catagory Types Row ///
                                 Padding(
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 20
@@ -170,9 +176,11 @@ class _SelectedServicePageState extends State<SelectedServicePage> {
                                     categoryTypeList: _docs,
                                     serviceCategoryName: snapshot.data['name'],
                                     serviceCategoryID: snapshot.data.id,
+                                    serviceCategoryType: _srvc,
 
                                   ),
                                 ),
+                                /// View Btn and Delete Slctd Row ///
                                 Padding(
                                   padding: EdgeInsets.all(24.0),
                                   child: Row(
@@ -250,11 +258,11 @@ class _SelectedServicePageState extends State<SelectedServicePage> {
 
                 }
             ),
-            /*ActionBar(
+            ActionBar(
+              title: "Selected Service",
+              hasTitle: true,
               hasBackArrow: true,
-              hasTitle: false,
-              hasBackground: false,
-            )*/
+            ),
           ],
         )
     );

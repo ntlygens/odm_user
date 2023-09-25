@@ -6,12 +6,13 @@ import 'package:ondamenu/screens/cart_page.dart';
 import 'package:ondamenu/services/firebase_services.dart';
 
 class ActionBar extends StatelessWidget {
+  final GlobalKey? key;
   final String? title;
   final bool? hasBackArrow;
   final bool? hasTitle;
   final bool? hasBackground;
 
-  ActionBar({ this.title, this.hasBackArrow, this.hasTitle, this.hasBackground });
+  ActionBar({this.key, this.title, this.hasBackArrow, this.hasTitle, this.hasBackground });
   FirebaseServices _firebaseServices = FirebaseServices();
 
   @override
@@ -59,7 +60,12 @@ class ActionBar extends StatelessWidget {
                   ),
               ),
             ),
-          if (_hasTitle)
+          if (_hasTitle && _hasBackArrow)
+            Text(
+              title ?? "Title here",
+              style: Constants.boldHeadingW,
+            )
+          else
             Text(
               title ?? "Title here",
               style: Constants.boldHeading,
