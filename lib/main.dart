@@ -5,38 +5,21 @@ import 'package:ondamenu/screens/landing_page.dart';
 
 import 'firebase_options.dart';
 
-/*final posDbOpt = new FirebaseOptions(
-    apiKey: "AIzaSyBQWjeIjGY_9B1m6JhT7Tkt2AtvRtiW8mk",
-    appId: "1:1024532317222:android:c8cd7594f341f563e412e7",
-    messagingSenderId: "ondamenu-pos",
-    projectId: "ondamenu-pos",
-    storageBucket: "ondamenu-pos.appspot.com"
-);
-Future<FirebaseApp> _initializePOS = Firebase.initializeApp(
-    name: "OnDaMenu-POS",
-    options: posDbOpt
-);*/
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  /*var posDbOpt = new FirebaseOptions(apiKey: "AIzaSyBQWjeIjGY_9B1m6JhT7Tkt2AtvRtiW8mk", appId: "1:1024532317222:android:c8cd7594f341f563e412e7",messagingSenderId: "ondamenu-pos", projectId: "ondamenu-pos");
-  Future<void> initializeSecondary() async {
-    FirebaseApp app = await Firebase.initializeApp(
-      name: "OnDaMenu-POS",
-      options: posDbOpt,
-    );
-    print('Initialized $app');
-  }*/
-  // Get the database for the other app.
-  // var secondaryDatabase = Firebase.apps(posDB);
+  // await Firebase.initializeApp();
+  var posDbOpt = new FirebaseOptions(apiKey: "AIzaSyBQWjeIjGY_9B1m6JhT7Tkt2AtvRtiW8mk", appId: "1:1024532317222:android:c8cd7594f341f563e412e7",messagingSenderId: "ondamenu-pos", projectId: "ondamenu-pos");
+  FirebaseApp app = await Firebase.initializeApp(
+    name: "OnDaMenu-POS",
+    options: posDbOpt,
+  );
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform
   );
-  // await Firebase.initializeApp();
-  // initializeSecondary();
+  // print('Initialized $app');
 
-  // print('-- main: Firebase.initializeApp');
   runApp( MyApp());
 }
 
@@ -57,10 +40,7 @@ class MyApp extends StatelessWidget {
           primary: Color(0xFFFF1E80),
           secondary: Color(0xFF1EFF22),
         ),
-        // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        // useMaterial3: true,
       ),
-      // home: const MyHomePage(title: 'Flutter Demo Home Page'),
       home: LandingPage(),
     );
   }

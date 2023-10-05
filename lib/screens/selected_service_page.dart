@@ -10,7 +10,9 @@ import '../constants.dart';
 
 class SelectedServicePage extends StatefulWidget {
   final String serviceID;
-  SelectedServicePage({required this.serviceID});
+  final String serviceType;
+
+  SelectedServicePage({required this.serviceID, required this.serviceType});
 
   @override
   _SelectedServicePageState createState() => _SelectedServicePageState();

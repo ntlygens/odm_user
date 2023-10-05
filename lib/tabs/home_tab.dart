@@ -17,16 +17,19 @@ class _HomeTabState extends State<HomeTab> {
   FirebaseServices _firebaseServices = FirebaseServices();
 
   // HomeTab({});
-  late List _srvcData;
+  late List _srvcDataList;
   late PageController _pageController;
   int _selectedPage = 0;
 
-  late String? _textVar = "";
-  late String? _textVar2 = "";
+  late String? _srvcData = "";
+  late String? _srvcDataType = "";
+  late String? _srvcData2 = "";
+  late String? _srvcData2Type = "";
+
   var key = GlobalKey();
   Size? redboxSize;
 
-  // var _textVar;
+  // var _srvcData;
   /*Future _dsplySrvc(value) async {
     return _firebaseServices.usersRef
         .doc(_firebaseServices.getUserID())
@@ -49,15 +52,15 @@ class _HomeTabState extends State<HomeTab> {
             var docRef = element['isSelected'];
 
             if (docRef == true) {
-              _textVar2 = element.id;
-              print("${_textVar2} is Selected");
+              _srvcData2 = element.id;
+              print("${_srvcData2} is Selected");
             } else {
               print("Not textVar2 exists");
             }
           })
         );
     print("thi is 2: ${_othrDB}");
-    return _textVar2;
+    return _srvcData2;
     // docRef.collection('sid');
     // docRef.update({'isSelected': true});
   }
@@ -73,8 +76,8 @@ class _HomeTabState extends State<HomeTab> {
             var docRef = element['isSelected'];
 
             if (docRef == true) {
-              _textVar = element.id;
-              print("Srvc: [${element['name']}] with Id: [${_textVar}] is Selected");
+              _srvcData = element.id;
+              print("Srvc: [${element['name']}] with Id: [${_srvcData}] is Selected");
             } /*else {
               print("Not textVar exists");
             }*/
@@ -90,8 +93,8 @@ class _HomeTabState extends State<HomeTab> {
         // .toString()
     ;
 
-    // print("thi is: ${_textVar}");
-    return _textVar;
+    // print("thi is: ${_srvcData}");
+    return _srvcData;
   }
 
   Future _dsplySelectedSrvc(value) async {
@@ -114,9 +117,9 @@ class _HomeTabState extends State<HomeTab> {
   void initState() {
     _pageController = PageController();
     _getSelectedSrvc();
-    // _textVar = "AnnNjTT8vmYSAEpT0rPg";
+    // _srvcData = "AnnNjTT8vmYSAEpT0rPg";
     /// for use with ondamenu-pos db ///
-    /// _textVar = "VnhXnkWdbvbZcSm7duYF"; ///
+    /// _srvcData = "VnhXnkWdbvbZcSm7duYF"; ///
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       setState(() {
         redboxSize = getRedBoxSize(key.currentContext!);
@@ -164,7 +167,8 @@ class _HomeTabState extends State<HomeTab> {
 
                   if(snapshot.connectionState == ConnectionState.active){
                     if(snapshot.hasData){
-                      _srvcData = snapshot.data!.docs;
+                      _srvcDataList = snapshot.data!.docs;
+                      // print('serviceDataLngth: ${_srvcDataList.length}');
                       return Container(
                         alignment: Alignment.topCenter,
                         width: screenWidth,
@@ -178,7 +182,7 @@ class _HomeTabState extends State<HomeTab> {
                           // horizontal: 8
                         ),
                         decoration: BoxDecoration(
-                          // ]\color: Color(0xB3EFBCBC),
+                          // color: Color(0xB3EFBCBC),
                           // borderRadius: BorderRadius.circular(8)
                         ),
 
@@ -197,21 +201,24 @@ class _HomeTabState extends State<HomeTab> {
                                       maxCrossAxisExtent: 400,
                                       childAspectRatio: 2 / 1
                                   ),
-                                  itemCount: _srvcData.length,
+                                  itemCount: _srvcDataList.length,
                                   itemBuilder: (BuildContext context, int index) {
                                     return GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          _textVar = _srvcData[index].id;
+                                          _srvcData = _srvcDataList[index].id;
+                                          _srvcDataType = _srvcDataList[index]['srvcType'];
                                         });
 
-                                        print("HomeTab-Srvc-Data-Name: ${_srvcData[index]['name']} \n");
-                                        print("HomeTab-Srvc-Data-ID: ${_srvcData[index].id}");
+                                        print("HomeTab-Srvc-Data-Name: ${_srvcDataList[index]['name']} \n");
+                                        print("HomeTab-Srvc-Data-ID: ${_srvcDataList[index].id}");
+                                        print("HomeTab-Srvc-Data-Type: ${_srvcDataList[index]['srvcType']}");
 
                                         Navigator.push(context, MaterialPageRoute(
                                             builder: (context) =>
                                                 SelectedServicePage(
-                                                  serviceID: "${_textVar}",
+                                                  serviceID: "${_srvcData}",
+                                                  serviceType: "${_srvcDataType}",
                                                 )
                                           // ServiceProductsPage(),
                                         ));
@@ -231,7 +238,7 @@ class _HomeTabState extends State<HomeTab> {
                                               child: ClipRRect(
                                                 borderRadius: BorderRadius.circular(6),
                                                 child: Image.network(
-                                                  "${_srvcData[index]['images'][0]}",
+                                                  "${_srvcDataList[index]['images'][0]}",
                                                   fit: BoxFit.fill,
                                                 ),
                                               ),

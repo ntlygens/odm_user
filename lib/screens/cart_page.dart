@@ -47,6 +47,7 @@ class _CartPageState extends State<CartPage> {
                             builder: (context) =>
                                 SelectedServicePage(
                                   serviceID: document.id,
+                                  serviceType: document['srvcType'],
                                 ),
                           ));
                         },

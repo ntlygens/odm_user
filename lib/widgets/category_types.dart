@@ -23,7 +23,9 @@ class CategoryTypes extends StatefulWidget {
 
 class _CategoryTypesState extends State<CategoryTypes> {
   String? _selectedProductName = "selected-product-name";
+  String? _selectedSellerName = "selected-product-name";
   String _selectedProductID = "selected-product-id";
+  String _selectedSellerID = "selected-product-id";
   String _selectedProductSrvcID = "selected-product-service-id";
   String _selectedSrvcCtgryName = "selected-service-name";
   String _selectedSrvcCtgryID = "selected-service-id";
@@ -73,6 +75,24 @@ class _CategoryTypesState extends State<CategoryTypes> {
       });
   }
 
+  Future _selectSellerProduct() async {
+      return _firebaseServices.usersRef
+          .doc(_firebaseServices.getUserID())
+          .collection("SelectedSeller")
+          .doc()
+          .set({
+        "sellerName": _selectedSellerName,
+        "sellerID": _selectedSellerID,
+        "srvcCtgry": _selectedSrvcCtgryName,
+        "srvcCtgryID": _selectedSrvcCtgryID,
+        "date": _firebaseServices.setDayAndTime(),
+      }).then((_) {
+        print(
+            "Name: ${_selectedProductName} | ID: ${_selectedProductID} Selected");
+        _setProductIsSelected(_selectedProductID);
+      });
+  }
+
   Future _selectCustomerService() async {
     return _firebaseServices.customerSrvcsRef
         .doc(_firebaseServices.getUserID())
@@ -101,11 +121,27 @@ class _CategoryTypesState extends State<CategoryTypes> {
         });
   }
 
+  Future _setSellerIsSelected(value) async {
+    return _firebaseServices.sellersRef
+        .doc(value)
+        .update({"isSelected": true})
+        .then((_) {
+          // _selectServiceProduct();
+          print("selection done");
+        });
+  }
+
   // Check if service type for product or customer before requesting data
   Future _checkServiceType() async {
-    if( widget.serviceCategoryType == "customer")
+    _isCustomerService = false;
+
+    if( widget.serviceCategoryType == "customer") {
       _isCustomerService = true;
-      print ('its a customer servcice');
+      print('${widget.serviceCategoryName} is a customer servcice');
+    }
+    print('${widget.serviceCategoryName} is a ${widget.serviceCategoryType} servcice');
+
+
   }
 
   @override
@@ -133,14 +169,14 @@ class _CategoryTypesState extends State<CategoryTypes> {
               mainAxisSpacing: 10),
           itemCount: widget.categoryTypeList.length,
           itemBuilder: (BuildContext ctx, index) {
-            // if(widget.categoryTypeList.isEmpty){};
-            // print('ctgry lngth: ${widget.categoryTypeList.length}');
             if(_isCustomerService) {
               _slctdSrvc = _firebaseServices.customerSrvcsRef;
             } else {
-              _slctdSrvc = _firebaseServices.productsRef;
+              _slctdSrvc = _firebaseServices.sellersRef;
             }
-            return StreamBuilder(
+
+            // ** Original StreamBuiler ** //
+            /*return StreamBuilder(
               stream: _slctdSrvc
                   .doc("${widget.categoryTypeList[index]}")
                   .snapshots(),
@@ -208,7 +244,79 @@ class _CategoryTypesState extends State<CategoryTypes> {
                   ),
                 );
               },
+            );*/
+            // *************************** //
+
+            // ** Sellers StreamBuilder being Build ** //
+            return StreamBuilder(
+              stream: _slctdSrvc
+                  .doc("${widget.categoryTypeList[index]}")
+                  .snapshots(),
+              builder: (context, AsyncSnapshot sellerSnap) {
+
+                if(sellerSnap.connectionState == ConnectionState.active) {
+                  if(sellerSnap.hasData) {
+                    // print("ID: ${sellerSnap.data.id} \n Name: ${sellerSnap.data['name']}");
+                    return GestureDetector(
+                      onTap: () async {
+                        _selectedSellerName = await "${sellerSnap.data['name']}";
+                        _selectedSellerID = await "${sellerSnap.data.id}";
+                        _selectedSrvcCtgryName = widget.serviceCategoryName;
+                        _selectedSrvcCtgryID = widget.serviceCategoryID;
+                        // _prodSelected = true;
+
+                        setState(() {
+                          // _isSelected = index;
+                        });
+
+                        // print("datentime: ${_firebaseServices.setDayAndTime()}");
+
+                        // await _isProductSelected(sellerSnap.data.id);
+                        await _selectServiceProduct();
+                        // await _setProductIsSelected(_selectedProductID);
+
+                        Navigator.push(context, MaterialPageRoute(
+                          builder: (context) =>
+                              ServiceProductsPage(),
+                        ));
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: Text(
+                            // "${widget.categoryTypeList[index]}",
+                            "${sellerSnap.data['name']}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: sellerSnap.data['isSelected']
+                                  ? Colors.white
+                                  : Colors.black,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        decoration: BoxDecoration(
+                          color: sellerSnap.data['isSelected'] ? Theme
+                              .of(context)
+                              .colorScheme.secondary : Color(0xFFDCDCDC),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+
+                      ),
+                    );
+                  }
+
+                }
+
+                return Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              },
             );
+            // *************************************** //
           }
       ),
     );

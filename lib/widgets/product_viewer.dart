@@ -14,6 +14,7 @@ class ProductViewer extends StatefulWidget {
   final String? prodName;
   final String? prodSrvcName;
   final String? prodSrvcID;
+  final String? prodSrvcType;
   final String srvcProdID;
   final bool? isSelected;
   final List? prodSellers;
@@ -23,6 +24,7 @@ class ProductViewer extends StatefulWidget {
     this.prodName,
     this.prodSrvcName,
     this.prodSrvcID,
+    this.prodSrvcType,
     required this.srvcProdID,
     this.prodSellers
   });
@@ -374,6 +376,7 @@ class _ProductViewerState extends State<ProductViewer> {
                         builder: (context) =>
                             SelectedServicePage(
                               serviceID: "${widget.prodSrvcID}",
+                              serviceType: "${widget.prodSrvcType}",
                             )
                     ));
 

@@ -5,14 +5,12 @@ import 'package:ondamenu/constants.dart';
 import 'package:ondamenu/screens/home_page.dart';
 import 'package:ondamenu/screens/login_page.dart';
 
-final FirebaseApp secondaryApp = Firebase.app('OnDaMenu-POS');
-
 class LandingPage extends StatelessWidget {
-  static final posDbOpt = new FirebaseOptions(apiKey: "AIzaSyBQWjeIjGY_9B1m6JhT7Tkt2AtvRtiW8mk", appId: "1:1024532317222:android:c8cd7594f341f563e412e7",messagingSenderId: "ondamenu-pos", projectId: "ondamenu-pos");
+  // static final posDbOpt = new FirebaseOptions(apiKey: "AIzaSyBQWjeIjGY_9B1m6JhT7Tkt2AtvRtiW8mk", appId: "1:1024532317222:android:c8cd7594f341f563e412e7",messagingSenderId: "ondamenu-pos", projectId: "ondamenu-pos");
 
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+  // final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
-  final Future<FirebaseApp> _initializationPOS = Firebase.initializeApp(name: "OnDaMenu-POS", options: posDbOpt);
+  // final Future<FirebaseApp> _initializationPOS = Firebase.initializeApp(name: "OnDaMenu-POS", options: posDbOpt);
   /*final Future<FirebaseApp> _initializePOS = Firebase.initializeApp(
     name: "OnDaMenu-POS",
     options: posDbOpt
@@ -44,7 +42,45 @@ class LandingPage extends StatelessWidget {
     // print('Initialized $_initializePOS');
 
     // print('app length: $lngth');
-    return FutureBuilder(
+    return StreamBuilder(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, streamSnapshot) {
+        if (streamSnapshot.hasError) {
+          return Scaffold(
+            body: Center(
+              child: Text("Error: ${streamSnapshot.error}"),
+            ),
+          );
+        }
+
+        if (streamSnapshot.connectionState == ConnectionState.active) {
+          // get the user
+          Object? _user = streamSnapshot.data;
+          // if user not logged in
+          if(_user == null) {
+            print('no user');
+            return LoginPage();
+          } else {
+            // user is logged in go to home page
+            // print('dUser: ${_initialization}');
+            // print('dUser: $_user');
+            print('User exists');
+            return HomePage();
+          }
+        }
+
+        return const Scaffold(
+          body: Center(
+            child: Text(
+              "Initializing App.... ",
+              style: Constants.regHeading,
+            ),
+          ),
+        );
+      },
+    );
+
+    /*return FutureBuilder(
         // future: _initialization,
         future: _initializationPOS,
         builder: (context, snapshot) {
@@ -55,12 +91,8 @@ class LandingPage extends StatelessWidget {
               ),
             );
           }
-
           // Connected ~ App is running on Firebase
           if (snapshot.connectionState == ConnectionState.done) {
-            // initializeSecondary();
-            // Streambuilder check of live login
-
             return StreamBuilder(
               stream: FirebaseAuth.instance.authStateChanges(),
               builder: (context, streamSnapshot) {
@@ -107,6 +139,6 @@ class LandingPage extends StatelessWidget {
               ),
             ),
           );
-        });
+        });*/
   }
 }
