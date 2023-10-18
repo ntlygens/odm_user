@@ -22,6 +22,13 @@ class _SelectedServicePageState extends State<SelectedServicePage> {
   FirebaseServices _firebaseServices = FirebaseServices();
 
   final _snackBar = SnackBar(content: Text("Product added to Cart"));
+  late bool _isCustomerSrvc;
+
+  Future _checkSrvcType() async {
+    _isCustomerSrvc = false;
+    if(widget.serviceType == 'customer')
+      _isCustomerSrvc = true;
+  }
 
   Future _removeAllServiceProducts() async {
     return _firebaseServices.usersRef
@@ -99,6 +106,17 @@ class _SelectedServicePageState extends State<SelectedServicePage> {
   }
 
   @override
+  void initState() {
+    _checkSrvcType();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     bool _alreadySelected = true;
 
@@ -118,7 +136,9 @@ class _SelectedServicePageState extends State<SelectedServicePage> {
 
                   if (snapshot.connectionState == ConnectionState.done) {
                     List _docs = snapshot.data!['type'];
-                    String _srvc = snapshot.data!['srvcType'];
+                    String _srvc = widget.serviceType;
+                    // String _srvc = snapshot.data!['srvcType'];
+                    // print("service types are: snnapshotData = ${_srvc} annd widgetServiceType = ${widget.serviceType}");
                     return ListView(
                         padding: EdgeInsets.all(0),
                         children: [
@@ -160,13 +180,13 @@ class _SelectedServicePageState extends State<SelectedServicePage> {
                                       bottom: 0
                                   ),
                                   child: Text(
-                                      "Service Categories",
+                                    _isCustomerSrvc ?
+                                    "${snapshot.data!['name']} Categories" : "",
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w600,
                                         color: Color(0xFFFF1E80)
                                       )
-
                                   ),
                                 ),
                                 /// Catagory Types Row ///

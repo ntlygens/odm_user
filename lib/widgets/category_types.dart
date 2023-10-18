@@ -33,6 +33,7 @@ class _CategoryTypesState extends State<CategoryTypes> {
 
   late bool _isCustomerService;
   late var _slctdSrvc;
+  late Image _cardBckgrnd;
 
   FirebaseServices _firebaseServices = FirebaseServices();
 
@@ -147,6 +148,7 @@ class _CategoryTypesState extends State<CategoryTypes> {
   @override
   void initState() {
     // _isCustomerService = "AnnNjTT8vmYSAEpT0rPg";
+    print("${widget.serviceCategoryType} is the srvcCatType");
     _checkServiceType();
     super.initState();
   }
@@ -163,7 +165,7 @@ class _CategoryTypesState extends State<CategoryTypes> {
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 120,
+              maxCrossAxisExtent: 400,
               childAspectRatio: 2 / 1,
               crossAxisSpacing: 10,
               mainAxisSpacing: 10),
@@ -175,94 +177,31 @@ class _CategoryTypesState extends State<CategoryTypes> {
               _slctdSrvc = _firebaseServices.sellersRef;
             }
 
-            // ** Original StreamBuiler ** //
-            /*return StreamBuilder(
-              stream: _slctdSrvc
-                  .doc("${widget.categoryTypeList[index]}")
-                  .snapshots(),
-              builder: (context, AsyncSnapshot productSnap) {
-
-                if(productSnap.connectionState == ConnectionState.active) {
-                  if(productSnap.hasData) {
-                    // print("ID: ${productSnap.data.id} \n Name: ${productSnap.data['name']}");
-                    return GestureDetector(
-                      onTap: () async {
-                        _selectedProductName = await "${productSnap.data['name']}";
-                        _selectedProductID = await "${productSnap.data.id}";
-                        _selectedProductSrvcID = await "${productSnap.data['srvc']}";
-                        _selectedSrvcCtgryName = widget.serviceCategoryName;
-                        _selectedSrvcCtgryID = widget.serviceCategoryID;
-                        // _prodSelected = true;
-
-                        setState(() {
-                          // _isSelected = index;
-                        });
-
-                        // print("datentime: ${_firebaseServices.setDayAndTime()}");
-
-                        // await _isProductSelected(productSnap.data.id);
-                        await _selectServiceProduct();
-                        // await _setProductIsSelected(_selectedProductID);
-
-                        Navigator.push(context, MaterialPageRoute(
-                          builder: (context) =>
-                              ServiceProductsPage(),
-                        ));
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        child: FittedBox(
-                          fit: BoxFit.fitWidth,
-                          child: Text(
-                            // "${widget.categoryTypeList[index]}",
-                            "${productSnap.data['name']}",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: productSnap.data['isSelected']
-                                  ? Colors.white
-                                  : Colors.black,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                        decoration: BoxDecoration(
-                          color: productSnap.data['isSelected'] ? Theme
-                              .of(context)
-                              .colorScheme.secondary : Color(0xFFDCDCDC),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-
-                      ),
-                    );
-                  }
-
-                }
-
-                return Scaffold(
-                  body: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              },
-            );*/
-            // *************************** //
-
             // ** Sellers StreamBuilder being Build ** //
             return StreamBuilder(
               stream: _slctdSrvc
                   .doc("${widget.categoryTypeList[index]}")
                   .snapshots(),
               builder: (context, AsyncSnapshot sellerSnap) {
+                if(sellerSnap.hasError) {
+                  return Scaffold(
+                    body: Center(
+                      child: Text(
+                        "RetailersListError: ${sellerSnap.error}"
+                      ),
+                    ),
+                  );
+                }
 
                 if(sellerSnap.connectionState == ConnectionState.active) {
                   if(sellerSnap.hasData) {
-                    print("list item = ${widget.categoryTypeList[index]}");
 
-                    // print("ID: ${sellerSnap.data.id} \n Name: ${sellerSnap.data['name']}");
+                    // print("list item = ${widget.categoryTypeList[index]}");
+                    print("ID: ${sellerSnap.data.id} \n Name: ${sellerSnap.data!['name']}");
                     return GestureDetector(
                       onTap: () async {
-                        _selectedSellerName = await "${sellerSnap.data['name']}";
-                        _selectedSellerID = await "${sellerSnap.data.id}";
+                        _selectedSellerName = await "${sellerSnap.data!['name']}";
+                        _selectedSellerID = await "${sellerSnap.data!.id}";
                         _selectedSrvcCtgryName = widget.serviceCategoryName;
                         _selectedSrvcCtgryID = widget.serviceCategoryID;
                         // _prodSelected = true;
@@ -282,29 +221,29 @@ class _CategoryTypesState extends State<CategoryTypes> {
                               ServiceProductsPage(),
                         ));
                       },
-                      child: Container(
-                        alignment: Alignment.center,
-                        child: FittedBox(
-                          fit: BoxFit.fitWidth,
-                          child: Text(
-                            // "${widget.categoryTypeList[index]}",
-                            "${sellerSnap.data['name']}",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: sellerSnap.data['isSelected']
-                                  ? Colors.white
-                                  : Colors.black,
-                              fontSize: 16,
+                      child: Card(
+                        elevation: 4,
+                        margin: EdgeInsets.symmetric(
+                          // 8
+                          vertical: 11,
+                          horizontal: 27,
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: Stack(
+                          children: [
+                            Container(
+                              alignment: Alignment.center,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(6),
+                                child:
+                                  _isCustomerService ?
+                                  Image.network("${sellerSnap.data!['images'][0]}")
+                                      : Image.network("${sellerSnap.data!['logo']}"
+                                  ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
-                        decoration: BoxDecoration(
-                          color: sellerSnap.data['isSelected'] ? Theme
-                              .of(context)
-                              .colorScheme.secondary : Color(0xFFDCDCDC),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-
                       ),
                     );
                   }

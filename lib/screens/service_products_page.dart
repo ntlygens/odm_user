@@ -28,13 +28,13 @@ class _ServiceProductsPageState extends State<ServiceProductsPage> {
                 .orderBy("date", descending: true)
                 .snapshots(),
             builder: (context, AsyncSnapshot snapshot) {
-              /*if( snapshot.hasError) {
+              if( snapshot.hasError) {
                 return Scaffold(
                   body: Center(
-                    child: Text("Error: ${snapshot.error}"),
+                    child: Text("ServiceProductPageError: ${snapshot.error}"),
                   ),
                 );
-              }*/
+              }
 
               if(snapshot.connectionState == ConnectionState.active) {
                 if(snapshot.hasData){
